@@ -3,7 +3,15 @@
 
 use cortex_m::asm;
 use cortex_m_rt::entry;
-use panic_log as _; // the panicking behavior
+//use panic_log as _; // the panicking behavior
+
+#[panic_handler]
+fn panic(info: &core::panic::PanicInfo) -> ! {
+    log::error!("FOOOOO {}", info);
+    loop {
+        asm::bkpt()
+    }
+}
 
 #[entry]
 fn main() -> ! {
