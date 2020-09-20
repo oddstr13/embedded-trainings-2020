@@ -9,6 +9,7 @@ use panic_log as _; // panic handler
 const APP: () = {
     struct Resources {
         power: POWER, // <- resource declaration
+        counter: u64,
     }
 
     #[init]
@@ -21,8 +22,11 @@ const APP: () = {
 
         log::info!("USBDETECTED interrupt enabled");
 
+        let counter: u64 = 0;
+
         init::LateResources {
             power, // <- resource initialization
+            counter,
         }
     }
 
@@ -35,16 +39,19 @@ const APP: () = {
         }
     }
 
-    #[task(binds = POWER_CLOCK, resources = [power])]
+    #[task(binds = POWER_CLOCK, resources = [power, counter])]
     //                                      ^^^^^^^ resource access list
     fn on_power_event(cx: on_power_event::Context) {
-        log::info!("POWER event occurred");
 
         // resources available to this task
         let resources = cx.resources;
 
         // the POWER peripheral can be accessed through a reference
         let power: &mut POWER = resources.power;
+        let counter: &mut u64 = resources.counter;
+        *counter += 1;
+
+        log::info!("POWER event {} occurred", counter);
 
         // clear the interrupt flag; otherwise this task will run again after it returns
         power.events_usbdetected.reset();
