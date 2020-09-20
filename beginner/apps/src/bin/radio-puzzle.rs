@@ -62,12 +62,13 @@ fn main() -> ! {
                         Some(v) => {
                             reverse_key[ch] = Some(*v);
                             seen[*v as usize] = true;
-                            log::info!("{} -> {}", str::from_utf8(&[ch as u8]).expect("??"), str::from_utf8(&[*v]).expect("??"));
+                            log::info!("{} -> {}", str::from_utf8(&[ch as u8]).unwrap_or("??"), str::from_utf8(&[*v]).unwrap_or("??"));
                         },
                     }
                 }
             }
         }
+
 
         abort = true;
         for ch in 0..255 as usize {
